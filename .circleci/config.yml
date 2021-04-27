@@ -32,6 +32,9 @@ jobs:
             - v1-dependencies-
 
       - run: gradle build
+      
+      - store_artifacts:
+          path: build/libs/
 
       - save_cache:
           paths:
