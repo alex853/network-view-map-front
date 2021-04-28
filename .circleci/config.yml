@@ -46,7 +46,7 @@ jobs:
 
       - run:
           name: Deploy Over SSH
-          command: scp -r build/libs/ -P $SSH_PORT $SSH_USER@$SSH_SERVER:/
+          command: scp -P $SSH_PORT -r build/libs/ $SSH_USER@$SSH_SERVER:/
 
 #  deploy:
 #    docker:
