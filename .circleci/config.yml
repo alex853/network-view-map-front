@@ -43,15 +43,18 @@ jobs:
 
       # run tests!
       #- run: gradle test
-      - add_ssh_keys:
-          fingerprints:
-            - "${SSH_FINGERPRINT}"
+      - add_ssh_keys
+#          fingerprints:
+#            - "${SSH_FINGERPRINT}"
 
       #- run: ssh-keyscan -H ${SSH_SERVER} >> ~/.ssh/known_hosts
       - run:
           name: Deploy Over SSH
-          command: scp -o StrictHostKeyChecking=no -P ${SSH_PORT} -r build/libs/ ${SSH_USER}@${SSH_SERVER}:/
+          command: |
+            echo '${SSH_KNOWN_HOST}' >> ~/.ssh/known_hosts
+            scp -P ${SSH_PORT} -r build/libs/ ${SSH_USER}@${SSH_HOST}:/
 
+# -o StrictHostKeyChecking=no 
 #  deploy:
 #    docker:
 #      - image: circleci/openjdk:8-jdk
