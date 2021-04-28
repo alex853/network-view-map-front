@@ -52,7 +52,7 @@ jobs:
           name: Deploy Over SSH
           command: |
             echo '${SSH_KNOWN_HOST}' >> ~/.ssh/known_hosts
-            scp -o StrictHostKeyChecking=no -P ${SSH_PORT} -r ~/repo/build/libs/*.war ${SSH_USER}@${SSH_HOST}:~/
+            scp -o StrictHostKeyChecking=no -P ${SSH_PORT} -r ~/repo/build/libs/*.war ${SSH_USER}@${SSH_HOST}:/opt/tomcat.staging/webapps
 
 
 
