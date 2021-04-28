@@ -48,8 +48,10 @@ jobs:
             - "$SSH_FINGERPRINT"
 
       - run:
+          command: ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+      - run:
           name: Deploy Over SSH
-          command: yes | scp -P $SSH_PORT -r build/libs/ $SSH_USER@$SSH_SERVER:/
+          command: scp -P $SSH_PORT -r build/libs/ $SSH_USER@$SSH_SERVER:/
 
 #  deploy:
 #    docker:
