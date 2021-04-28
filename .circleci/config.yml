@@ -54,6 +54,7 @@ jobs:
             echo '${SSH_KNOWN_HOST}' >> ~/.ssh/known_hosts
             scp -P ${SSH_PORT} -r build/libs/ ${SSH_USER}@${SSH_HOST}:/
 
+
 # -o StrictHostKeyChecking=no 
 #  deploy:
 #    docker:
