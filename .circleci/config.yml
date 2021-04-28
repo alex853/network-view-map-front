@@ -52,12 +52,13 @@ jobs:
           name: Deploy Over SSH
           command: |
             echo '${SSH_KNOWN_HOST}' >> ~/.ssh/known_hosts
-            ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} -v
             scp -o StrictHostKeyChecking=no -P ${SSH_PORT} -r build/libs/ ${SSH_USER}@${SSH_HOST}:/
 
 
 
 # -o StrictHostKeyChecking=no 
+#             ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} -v
+
 #  deploy:
 #    docker:
 #      - image: circleci/openjdk:8-jdk
