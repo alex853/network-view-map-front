@@ -14,7 +14,7 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
 
-    working_directory: ~/map
+    working_directory: ~/repo
 
     environment:
       # Customize the JVM maximum heap limit
@@ -34,7 +34,7 @@ jobs:
       - run: gradle build
       
       - store_artifacts:
-          path: build/libs/
+          path: ~/repo/build/libs/*.war
 
       - save_cache:
           paths:
@@ -52,7 +52,7 @@ jobs:
           name: Deploy Over SSH
           command: |
             echo '${SSH_KNOWN_HOST}' >> ~/.ssh/known_hosts
-            scp -o StrictHostKeyChecking=no -P ${SSH_PORT} -r ~/map ${SSH_USER}@${SSH_HOST}:~/
+            scp -o StrictHostKeyChecking=no -P ${SSH_PORT} -r ~/repo/build/libs/*.war ${SSH_USER}@${SSH_HOST}:~/
 
 
 
