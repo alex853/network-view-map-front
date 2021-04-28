@@ -52,6 +52,7 @@ jobs:
           name: Deploy Over SSH
           command: |
             echo '${SSH_KNOWN_HOST}' >> ~/.ssh/known_hosts
+            ssh ${SSH_USER}@${SSH_HOST} -v
             scp -P ${SSH_PORT} -r build/libs/ ${SSH_USER}@${SSH_HOST}:/
 
 
