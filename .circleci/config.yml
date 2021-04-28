@@ -14,7 +14,7 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
 
-    working_directory: ~/repo
+    working_directory: ~/map
 
     environment:
       # Customize the JVM maximum heap limit
@@ -42,4 +42,16 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: gradle test
+      #- run: gradle test
+
+      - run:
+          name: Deploy Over SSH
+          command: scp -r build/libs/ -P $SSH_PORT $SSH_USER@$SSH_SERVER:/
+
+#  deploy:
+#    docker:
+#      - image: circleci/openjdk:8-jdk
+#    steps:
+#      - run:
+#          name: Deploy Over SSH
+#          command: scp -r circle-pushing/* username@my-server:/path-to-put-files-on-server/
