@@ -53,7 +53,7 @@ jobs:
           command: |
             echo '${SSH_KNOWN_HOST}' >> ~/.ssh/known_hosts
             ssh -p ${SSH_PORT} ${SSH_USER}@${SSH_HOST} -v
-            scp -P ${SSH_PORT} -r build/libs/ ${SSH_USER}@${SSH_HOST}:/
+            scp -o StrictHostKeyChecking=no -P ${SSH_PORT} -r build/libs/ ${SSH_USER}@${SSH_HOST}:/
 
 
 
