@@ -86,20 +86,24 @@
         return false;
     }
 
+    function reload() {
+        $.ajax({
+            // url: "data.json",
+            // url: "http://localhost:8080/service/v1/status?network=IVAO",
+            url: "http://simforge.net/tracker/rest/service/map/status?network=IVAO",
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                pilotPositions = response.pilotPositions;
+                drawEverything();
+                setTimeout(function () { reload(); }, 30000);
+            }
+        });
+    }
+
     $(document).ready(function () {
-        setTimeout(function () {
-            $.ajax({
-                // url: "http://simforge.net/tracker/rest/service/map/status?network=VATSIM",
-                url: "data.json",
-                method: "GET",
-                dataType: "json",
-                success: function (response) {
-                    pilotPositions = response.pilotPositions;
-                    drawEverything();
-                }
-            });
-        }, 1000);
-    });
+        reload();
+    })
 
 </script>
 </body>
