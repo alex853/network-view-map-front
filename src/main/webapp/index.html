@@ -4,7 +4,7 @@
 <head>
     <title>simforge.net - Network View</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.16/p5.min.js" type="text/javascript"></script>
-    <script src="mappa.min.js" type="text/javascript"></script>
+    <script src="mappa.js" type="text/javascript"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" type="text/javascript"></script>
 </head>
 
@@ -30,7 +30,9 @@
         canvas = createCanvas(windowWidth, windowHeight);
 
         myMap = mappa.tileMap(options);
-        myMap.overlay(canvas);
+        myMap.overlay(canvas, function () {
+            myMap.map.invalidateSize();
+        });
 
         myMap.onChange(drawEverything);
     }
@@ -86,11 +88,17 @@
         return false;
     }
 
+    // https://github.com/cvalenzuela/Mappa/issues/31
+    function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+        myMap.resize(canvas);
+    }
+
     function reload() {
         $.ajax({
             // url: "data.json",
-            // url: "http://localhost:8080/service/v1/status?network=IVAO",
-            url: "http://simforge.net:8080/tracker/rest/service/map/status?network=IVAO",
+            url: "http://localhost:8080/service/v1/status?network=IVAO",
+            // url: "http://simforge.net:8080/tracker/rest/service/map/status?network=IVAO",
             method: "GET",
             dataType: "json",
             success: function (response) {
