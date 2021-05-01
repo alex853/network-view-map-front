@@ -97,7 +97,8 @@
     function reload() {
         $.ajax({
             // url: "data.json",
-            url: "http://localhost:8080/service/v1/status?network=IVAO",
+            // url: "http://localhost:8080/service/v1/status?network=IVAO",
+            url: "http://simforge.net:7121/service/v1/status",
             // url: "http://simforge.net:8080/tracker/rest/service/map/status?network=IVAO",
             method: "GET",
             dataType: "json",
