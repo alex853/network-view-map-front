@@ -11,7 +11,10 @@
 <body style="padding: 0; margin: 0;">
 <script>
 
-    let pilotPositions = [];
+    const markers = new Map();
+    const MarkerState = {
+        "Default": "default",
+        "Selected": "selected"}
 
     let myMap;
     let canvas;
@@ -42,49 +45,74 @@
     // }
 
     function drawEverything() {
-        console.info("drawEverything");
+        console.info(new Date() + " drawEverything");
 
         clear();
-
-/*        // Every Frame, get the canvas position
-        // for the latitude and longitude of Nigeria
-        const nigeria = myMap.latLngToPixel(11.396396, 5.076543);
-        // Using that position, draw an ellipse
-        ellipse(nigeria.x, nigeria.y, 20, 20);
-
-
-        translate(50, 50);
-        stroke(255, 0, 0);
-        beginShape();
-// Exterior part of shape, clockwise winding
-        vertex(-40, -40);
-        vertex(40, -40);
-        vertex(40, 40);
-        vertex(-40, 40);
-// Interior part of shape, counter-clockwise winding
-        beginContour();
-        vertex(-20, -20);
-        vertex(-20, 20);
-        vertex(20, 20);
-        vertex(20, -20);
-        endContour();
-        endShape(CLOSE);*/
 
         fill(200);
         let textHeight = 11;
         textSize(textHeight);
 
-        pilotPositions.forEach(function (pilotPosition) {
-            const coords = myMap.latLngToPixel(pilotPosition.latitude, pilotPosition.longitude);
-            ellipse(coords.x, coords.y, 5, 5);
+        for (let marker of markers.values()) {
+            const pilotPosition = marker.pilotPosition;
+            if (!pilotPosition) {
+                continue; // if pilot disappeared from status
+            }
 
-            text(pilotPosition.callsign, coords.x + 5, coords.y + textHeight/3);
-        });
+            const markerState = marker.state;
+
+            const coords = myMap.latLngToPixel(pilotPosition.latitude, pilotPosition.longitude);
+            if (markerState === MarkerState.Default) {
+                ellipse(coords.x, coords.y, 5, 5);
+            } else if (markerState === MarkerState.Selected) {
+                ellipse(coords.x, coords.y, 7, 7);
+            }
+
+            let textX = coords.x + 5;
+            let textY = coords.y + textHeight/3;
+            text(pilotPosition.callsign, textX, textY);
+            if (markerState === MarkerState.Selected) {
+                textY += textHeight;
+                text(pilotPosition.type + ' ' + pilotPosition.regNo, textX, textY);
+                textY += textHeight;
+                text(pilotPosition.altitude + ' ' + pilotPosition.groundspeed, textX, textY);
+                textY += textHeight;
+                text(pilotPosition.fpOrigin + ' - ' + pilotPosition.fpDestination, textX, textY);
+            }
+        }
     }
 
     function mousePressed() {
-        ellipse(mouseX, mouseY, 5, 5);
-        // prevent default
+        // const mouse = myMap.pixelToLatLng(mouseX, mouseY);
+        // window.document.title = mouseX + ',' + mouseY + ':' + Math.floor(mouse.lng) + ',' + Math.floor(mouse.lat);
+
+        let minDistance = 1000000;
+        let minMarker = null;
+
+        for (let marker of markers.values()) {
+            const pilotPosition = marker.pilotPosition;
+            if (!pilotPosition) {
+                continue;
+            }
+
+            const pilotCoords = myMap.latLngToPixel(pilotPosition.latitude, pilotPosition.longitude);
+            // const zeroCoords = myMap.latLngToPixel(0, 0);
+            const dist = Math.abs(mouseX - pilotCoords.x) + Math.abs(mouseY - pilotCoords.y);
+            if (dist < minDistance) {
+                minDistance = dist;
+                minMarker = marker;
+            }
+        }
+
+        if (minDistance < 15) {
+            if (minMarker.state === MarkerState.Default) {
+                minMarker.state = MarkerState.Selected;
+            } else {
+                minMarker.state = MarkerState.Default;
+            }
+            drawEverything();
+        }
+
         return false;
     }
 
@@ -103,7 +131,26 @@
             method: "GET",
             dataType: "json",
             success: function (response) {
-                pilotPositions = response.pilotPositions;
+                // drop all positions for existing markers
+                for (let marker of markers.values()) {
+                    marker.pilotPosition = null;
+                }
+
+                const pilotPositions = response.pilotPositions;
+                pilotPositions.forEach(function (pilotPosition) {
+                    const key = pilotPosition.pilotNumber;
+                    let marker = markers.get(key);
+                    if (marker) {
+                        marker.pilotPosition = pilotPosition;
+                    } else {
+                        marker = {
+                            state: MarkerState.Default,
+                            pilotPosition: pilotPosition
+                        }
+                        markers.set(key, marker);
+                    }
+                });
+
                 drawEverything();
                 setTimeout(function () { reload(); }, 30000);
             }
