@@ -49,7 +49,6 @@
 
         clear();
 
-        fill(200);
         let textHeight = 11;
         textSize(textHeight);
 
@@ -63,8 +62,10 @@
 
             const coords = myMap.latLngToPixel(pilotPosition.latitude, pilotPosition.longitude);
             if (markerState === MarkerState.Default) {
+                fill(200);
                 ellipse(coords.x, coords.y, 5, 5);
             } else if (markerState === MarkerState.Selected) {
+                fill(255, 204, 0);
                 ellipse(coords.x, coords.y, 7, 7);
             }
 
