@@ -74,13 +74,37 @@
             text(pilotPosition.callsign, textX, textY);
             if (markerState === MarkerState.Selected) {
                 textY += textHeight;
-                text(pilotPosition.type + ' ' + pilotPosition.regNo, textX, textY);
+                text(mask4symbols(pilotPosition.type) + ' ' + mask(pilotPosition.regNo), textX, textY);
                 textY += textHeight;
-                text(pilotPosition.altitude + ' ' + pilotPosition.groundspeed, textX, textY);
+                text(formatAltitude(pilotPosition.altitude) + ' ' + pilotPosition.groundspeed, textX, textY);
                 textY += textHeight;
-                text(pilotPosition.fpOrigin + ' - ' + pilotPosition.fpDestination, textX, textY);
+                text(mask4symbols(pilotPosition.fpOrigin) + ' - ' + mask4symbols(pilotPosition.fpDestination), textX, textY);
             }
         }
+    }
+
+    function mask4symbols(value) {
+        return value ? value : '        ';
+    }
+
+    function mask(value) {
+        return value ? value : '';
+    }
+
+    function formatAltitude(altitudeInFeet) {
+        altitudeInFeet = altitudeInFeet < 0 ? 0 : altitudeInFeet;
+        const altitude100 = Math.round(altitudeInFeet / 100.0);
+        const altPart = zeroPad(altitude100, 3);
+        const modePart = altitude100 >= 60 ? 'F' : 'A';
+        return modePart + altPart;
+    }
+
+    function zeroPad(value, length) {
+        let s = value.toString();
+        while (s.length < length) {
+            s = '0' + s;
+        }
+        return s;
     }
 
     function mousePressed() {
