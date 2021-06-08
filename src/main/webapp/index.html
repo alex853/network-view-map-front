@@ -147,28 +147,31 @@
         myMap.resize(canvas);
     }
 
-    function reload() {
+    function reload(network) {
         $.ajax({
             // url: "data.json",
-            // url: "http://localhost:8080/service/v1/status?network=IVAO",
-            url: "http://simforge.net:7121/service/v1/status",
-            // url: "http://simforge.net:8080/tracker/rest/service/map/status?network=IVAO",
+            // url: 'http://localhost:8080/service/v1/status?network=' + network,
+            url: 'http://simforge.net:7121/service/v1/status?network=' + network,
             method: "GET",
             dataType: "json",
             success: function (response) {
                 // drop all positions for existing markers
                 for (let marker of markers.values()) {
+                    if (marker.network !== network) {
+                        continue;
+                    }
                     marker.pilotPosition = null;
                 }
 
                 const pilotPositions = response.pilotPositions;
                 pilotPositions.forEach(function (pilotPosition) {
-                    const key = pilotPosition.pilotNumber;
+                    const key = network + '/' + pilotPosition.pilotNumber;
                     let marker = markers.get(key);
                     if (marker) {
                         marker.pilotPosition = pilotPosition;
                     } else {
                         marker = {
+                            network: network,
                             state: MarkerState.Default,
                             pilotPosition: pilotPosition
                         }
@@ -177,13 +180,14 @@
                 });
 
                 drawEverything();
-                setTimeout(function () { reload(); }, 30000);
+                setTimeout(function () { reload(network); }, 30000);
             }
         });
     }
 
     $(document).ready(function () {
-        reload();
+        reload('VATSIM');
+        reload('IVAO');
     })
 
 </script>
