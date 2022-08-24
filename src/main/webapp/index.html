@@ -181,6 +181,9 @@
 
                 drawEverything();
                 setTimeout(function () { reload(network); }, 30000);
+            },
+            error: function (jq, response) {
+                setTimeout(function () { reload(network); }, 30000);
             }
         });
     }
