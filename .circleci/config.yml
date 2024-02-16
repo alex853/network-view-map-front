@@ -57,7 +57,7 @@ workflows:
       - build-and-deploy-to-staging:
           filters:
             branches:
-              only: main
+              only: develop
 
   build-and-deploy-to-prod:
     jobs:
